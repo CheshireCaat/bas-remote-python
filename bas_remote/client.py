@@ -70,15 +70,13 @@ class BasRemoteClient():
         })
         await self._callback.on_socket_opened()
 
-    async def send_async(self, msg_type: str, params: dict = {}, callback: Optional[Callable] = None) -> None:
+    async def send_async(self, msg_type: str, params: dict = {}, on_result: Optional[Callable] = None) -> None:
         msg_id = await self.send(msg_type, params, True)
 
-        if callback and args_len(callback) == 1:
-            self._arg_requests[msg_id] = callback
-            return
-        if callback and args_len(callback) == 0:
-            self._def_requests[msg_id] = callback
-            return
+        if on_result and args_len(on_result) == 1:
+            self._arg_requests[msg_id] = on_result
+        if on_result and args_len(on_result) == 0:
+            self._def_requests[msg_id] = on_result
 
     async def send(self, msg_type: str, params: dict = {}, is_async: bool = False) -> int:
         """Send the custom message and get message id as result.
@@ -114,11 +112,11 @@ class BasRemoteClient():
         )
 
 
-def new_message(message_type, params, is_async):
+def new_message(msg_type, params, is_async):
     return {
         'id': randint(100000, 999999),
-        'type': message_type,
         'async': is_async,
+        'type': msg_type,
         'data': params
     }
 

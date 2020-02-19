@@ -36,3 +36,15 @@ class AuthenticationError(BasError):
 
     def __init__(self):
         super().__init__(self._message)
+
+
+class AlreadyRunningError(BasError):
+    _message = 'Another task is already running. Unable to start a new one'
+
+    def __init__(self):
+        super().__init__(self._message)
+
+
+class FunctionError(BasError):
+    def __init__(self, message):
+        super().__init__(message)
