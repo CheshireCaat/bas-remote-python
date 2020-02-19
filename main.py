@@ -23,13 +23,14 @@ async def main(loop):
 
     client = BasRemoteClient(
         Options(scriptName='TestRemoteControl'), DefCallback(), loop)
+
     await client.start()
-    print('here')
+
     await client.send_async('set_global_variable', {
         'name': 'TEST',
         'value': 5
     }, on_variable_set)
-    await asyncio.sleep(2)
+
     await client.send_async('get_global_variable', {
         'name': 'TEST'
     }, on_variable_get)
