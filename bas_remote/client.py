@@ -1,14 +1,14 @@
 import asyncio
 
-from bas_remote.options import Options
-from .callback import ClientCallback
-from .services import EngineService
-from .services import SocketService
-from typing import Callable, Optional
-from typing import Dict
 from inspect import getfullargspec
 from random import randint
-from json import loads
+from typing import Callable, Dict, Optional
+
+from .services import EngineService, SocketService
+from .errors import AuthenticationError
+from .callback import ClientCallback
+from .options import Options
+
 
 __all__ = ['BasRemoteClient']
 
@@ -24,12 +24,15 @@ class BasRemoteClient():
         """Create an instance of BasRemoteClient class.
 
         Args:
-            options (Options): Client options object.
-            callback (ClientCallback, optional): Client callback object. Defaults to None.
-            loop (asyncio.BaseEventLoop, optional): AsyncIO loop object. Defaults to None.
+            options (Options): 
+                Client options object.
+            callback (ClientCallback, optional):
+                Client callback object. Defaults to None.
+            loop (asyncio.BaseEventLoop, optional): 
+                AsyncIO loop object. Defaults to None.
         """
-        self._callback = callback or ClientCallback()
         self._loop = loop or asyncio.get_event_loop()
+        self._callback = callback or ClientCallback()
         self._options = options
 
         self._engine = EngineService(self)
@@ -41,21 +44,17 @@ class BasRemoteClient():
 
         msg_type, msg_id = message['type'], message['id']
 
-        if msg_type == 'thread_start' and not self._future.done():
-            self._future.set_result(True)
-
-        if msg_type == 'message' and not self._future.done():
-            self._future.set_exception(ValueError('message'))
-
         if msg_type == 'initialize':
             await self.send('accept_resources', {'-bas-empty-script-': True})
+        elif msg_type == 'thread_start' and not self._future.done():
+            self._future.set_result(True)
+        elif msg_type == 'message' and not self._future.done():
+            self._future.set_exception(AuthenticationError())
         elif message['async'] and msg_id:
             if msg_id in self._arg_requests:
-                func = self._arg_requests.pop(msg_id)
-                func(message['data'])
+                self._arg_requests.pop(msg_id)(message['data'])
             if msg_id in self._def_requests:
-                func = self._def_requests.pop(msg_id)
-                func()
+                self._def_requests.pop(msg_id)()
 
     async def _on_message_sent(self, message: dict) -> None:
         await self._callback.on_message_sent(message)
@@ -71,27 +70,28 @@ class BasRemoteClient():
         })
         await self._callback.on_socket_opened()
 
-    async def send_async(self, message_type: str, params: dict = {}, callback: Optional[Callable] = None) -> None:
-        message_id = await self.send(message_type, params, True)
+    async def send_async(self, msg_type: str, params: dict = {}, callback: Optional[Callable] = None) -> None:
+        msg_id = await self.send(msg_type, params, True)
+
         if callback and args_len(callback) == 1:
-            self._arg_requests[message_id] = callback
+            self._arg_requests[msg_id] = callback
             return
         if callback and args_len(callback) == 0:
-            self._def_requests[message_id] = callback
+            self._def_requests[msg_id] = callback
             return
 
-    async def send(self, message_type: str, params: dict = {}, is_async: bool = False) -> int:
+    async def send(self, msg_type: str, params: dict = {}, is_async: bool = False) -> int:
         """Send the custom message and get message id as result.
 
         Args:
-            message_type (str): [description]
+            msg_type (str): [description]
             params (dict, optional): [description]. Defaults to {}.
             is_async (bool, optional): [description]. Defaults to False.
 
         Returns:
             int: message id number.
         """
-        message = new_message(message_type, params, is_async)
+        message = new_message(msg_type, params, is_async)
         await self._socket.send(message)
         return message['id']
 

@@ -29,3 +29,10 @@ class ScriptNotExistError(BasError):
 
     def __init__(self):
         super().__init__(self._message)
+
+
+class AuthenticationError(BasError):
+    _message = 'Unsuccessful authentication'
+
+    def __init__(self):
+        super().__init__(self._message)

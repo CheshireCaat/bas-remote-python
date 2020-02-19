@@ -1,6 +1,4 @@
-
 class ClientCallback():
-
     async def on_message_received(self, message: dict) -> None:
         """Gets called when WebSocket receives new message.
 
