@@ -29,10 +29,16 @@ async def main(loop):
         'name': 'TEST',
         'value': 5
     }, on_variable_set)
+    await asyncio.sleep(2)
     await client.send_async('get_global_variable', {
         'name': 'TEST'
     }, on_variable_get)
-    loop.run_forever()
+
+    while (True):
+        try:
+            await asyncio.sleep(1)
+        except KeyboardInterrupt:
+            break
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

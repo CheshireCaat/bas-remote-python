@@ -38,10 +38,10 @@ class BasRemoteClient():
 
         msg_type, msg_id = message['type'], message['id']
 
-        if msg_type == 'thread_start' and not self._future.done:
+        if msg_type == 'thread_start' and not self._future.done():
             self._future.set_result(True)
 
-        if msg_type == 'message' and not self._future.done:
+        if msg_type == 'message' and not self._future.done():
             self._future.set_exception(ValueError('message'))
 
         if msg_type == 'initialize':
@@ -70,6 +70,7 @@ class BasRemoteClient():
 
     async def send_async(self, message_type: str, params: dict = {}, callback: Callable = None) -> None:
         message_id = await self.send(message_type, params, True)
+        print(type(callback))
         self._requests[message_id] = callback
 
     async def send(self, message_type: str, params: dict = {}, is_async: bool = False) -> int:
@@ -85,18 +86,7 @@ class BasRemoteClient():
         await self._engine.start(port)
         await self._socket.start(port)
 
-        self._loop.create_task(self._listen())
-
         await self._wait()
-
-    async def _listen(self) -> None:
-        try:
-            await self._socket.listen()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            await self._engine.close()
-            await self._socket.close()
 
     async def _wait(self) -> None:
         future = self._future

@@ -31,9 +31,11 @@ class SocketService(BaseService):
 
     async def _closed(self) -> None:
         await self._client._on_socket_closed()
+        self._loop.create_task(self.close())
 
     async def _opened(self) -> None:
         await self._client._on_socket_opened()
+        self._loop.create_task(self.listen())
 
     async def start(self, port: int) -> None:
         """Asynchronously start the socket service with the specified port.
@@ -51,7 +53,6 @@ class SocketService(BaseService):
                 await asyncio.sleep(1)
                 attempt += 1
         await self._opened()
-        await self._listen()
 
     async def listen(self) -> None:
         while True:

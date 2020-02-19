@@ -8,5 +8,5 @@ class BaseService(object):
     async def start(self, port: int) -> None:
         pass
 
-    async def close(self) -> None:
+    def close(self) -> None:
         pass

@@ -25,7 +25,7 @@ class Options:
     def __post_init__(self):
         if not self.workingDir:
             msg = "Field 'workingDir' must be specified"
+            raise ValueError(msg)
         if not self.scriptName:
             msg = "Field 'scriptName' must be specified"
-        if msg:
             raise ValueError(msg)

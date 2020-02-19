@@ -99,3 +99,12 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Exclude collected Django static files
+static_collected
+
+# Exclude machine-specific vs code settings
+.vscode/settings.json
+
+# Exclude working folder
+data/

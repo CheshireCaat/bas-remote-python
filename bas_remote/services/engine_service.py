@@ -83,8 +83,10 @@ class EngineService(BaseService):
                     return await response.release()
 
     async def _extract(self, zipPath: str) -> None:
+        # TODO: aiozipstream
         with ZipFile(zipPath, 'r') as file:
-            async def coro(member): file.extract(member, self.exeDir, None)
+            async def coro(member): 
+                file.extract(member, self.exeDir, None)
 
             tasks = [self._loop.create_task(coro(member))
                      for member in file.namelist()]
