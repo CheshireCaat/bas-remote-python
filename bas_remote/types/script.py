@@ -1,7 +1,7 @@
 from distutils.version import StrictVersion
 
 
-class Script():
+class Script:
     supported_version = '22.4.2'
 
     def __init__(self, data):
@@ -31,3 +31,6 @@ class Script():
     @property
     def hash(self) -> str:
         return self._data['hash']
+
+
+__all__ = ['Script']
