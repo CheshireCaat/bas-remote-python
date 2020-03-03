@@ -17,7 +17,12 @@ class Message:
         metadata=config(
             field_name="type")
     )
-    id: int = randint(100000, 999999)
+    id_: int = field(
+        metadata=config(
+            field_name="id"
+        ),
+        default=randint(100000, 999999)
+    )
     data: Any = None
 
 
