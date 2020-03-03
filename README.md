@@ -47,7 +47,7 @@ Following diagram will explain project architecture:
 
 ![](https://i.imgur.com/9lfF3EJ.png)
 
-**Running custom code** section explains how to prepare your project and upload it into the cloud. Portable BAS instance is downloaded and started automatically, it is also closed automatically when ```BasRemoteClient``` gets closed. Folder, where portable BAS instance is located by default is _data_ folder relative to executable. It can be customized by using ```options.workingDir``` setting.
+**Running custom code** section explains how to prepare your project and upload it into the cloud. Portable BAS instance is downloaded and started automatically, it is also closed automatically when ```BasRemoteClient``` gets closed. Folder, where portable BAS instance is located by default is _data_ folder relative to executable. It can be customized by using ```options.working_dir``` setting.
 
 # Project example
 
