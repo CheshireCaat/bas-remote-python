@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from os.path import abspath, join
 from os import getcwd
+from os import path
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Options:
             Login from a user account with access to the script.
     """
 
-    working_dir: str = join(getcwd(), 'data')
+    working_dir: str = path.join(getcwd(), 'data')
 
     script_name: str = ''
 
@@ -31,7 +31,7 @@ class Options:
             raise ValueError("Field 'workingDir' must be specified")
         if not self.script_name:
             raise ValueError("Field 'scriptName' must be specified")
-        self.working_dir = abspath(self.working_dir)
+        self.working_dir = path.abspath(self.working_dir)
 
 
 __all__ = ['Options']
