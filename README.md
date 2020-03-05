@@ -66,8 +66,9 @@ async def main():
 if __name__ == '__main__':
     event_loop = asyncio.get_event_loop()
     event_loop.run_until_complete(main())
-
 ```
+
+Checkout [wiki](https://github.com/CheshireCaat/bas-remote-node/wiki) for more examples.
 
 # Running custom code
 
