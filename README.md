@@ -27,6 +27,48 @@ Check following link for more info:
 pip install bas-remote-python
 ```
 
+# Quick example
+
+Following code will search for _cats_ query in Google and output result into console. You can just copy paste this code and run it.
+
+```python
+import asyncio
+
+from bas_remote import BasRemoteClient, Options
+
+
+async def main():
+    # Set script name, and optionally auth details (login, password)
+    options = Options(script_name='TestRemoteControl')
+
+    # Create client
+    script_client = BasRemoteClient(options)
+
+    # Start application, this may take some time
+    await script_client.start()
+
+    # Set parameters for function
+    script_params = {'Query': 'cats'}
+
+    # Run function and wait for result
+    # Following function will return list of strings
+    result = await script_client.run_function(
+        'GoogleSearch',  # or 'YourFunctionName'
+        script_params)
+
+    # Iterate and output results
+    for link in result:
+        print(link)
+
+    await script_client.close()
+
+
+if __name__ == '__main__':
+    event_loop = asyncio.get_event_loop()
+    event_loop.run_until_complete(main())
+
+```
+
 # Running custom code
 
 Previous example used _TestRemoteControl_ project and _GoogleSearch_ function defined in it. 

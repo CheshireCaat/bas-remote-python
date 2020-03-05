@@ -103,8 +103,8 @@ ENV/
 # Exclude collected Django static files
 static_collected
 
-# Exclude machine-specific VSCode settings
-.vscode/
+# Exclude machine-specific PyCharm settings
+.idea/
 
 # Exclude working folder
 data/
