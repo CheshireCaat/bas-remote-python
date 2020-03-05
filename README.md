@@ -34,7 +34,8 @@ Following code will search for _cats_ query in Google and output result into con
 ```python
 import asyncio
 
-from bas_remote import BasRemoteClient, Options
+from bas_remote import BasRemoteClient
+from bas_remote import Options
 
 
 async def main():
