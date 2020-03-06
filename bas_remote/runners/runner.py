@@ -24,44 +24,44 @@ class Runner:
         """Gets current thread id."""
         return self._id
 
-    async def run_function(self, function_name: str, function_params: Optional[Dict] = None) -> asyncio.Future:
+    async def run_function(self, name: str, params: Optional[Dict] = None) -> asyncio.Future:
         """Call the BAS function asynchronously.
 
         Args:
-            function_name (str): BAS function name as string.
-            function_params (dict, optional): BAS function arguments list. Defaults to None.
+            name (str): BAS function name as string.
+            params (dict, optional): BAS function arguments list. Defaults to None.
         """
         self._future = asyncio.Future(loop=self._loop)
         await self._run_function(
-            function_name=function_name,
-            function_params=function_params,
+            name=name,
+            params=params,
             on_result=lambda result: self._future.set_result(result),
             on_error=lambda error: self._future.set_exception(error)
         )
         return await self._future
 
-    async def _run_function(self, function_name: str, function_params: dict, on_result, on_error):
+    async def _run_function(self, name: str, params: dict, on_result, on_error):
         """Call the BAS function asynchronously.
 
         Args:
-            function_name (str): BAS function name as string.
-            function_params (dict): BAS function arguments list.
+            name (str): BAS function name as string.
+            params (dict): BAS function arguments list.
             on_result: [description]
             on_error: [description]
         """
         pass
 
-    async def _run_task(self, function_name: str, function_params: dict, callback):
+    async def _run_task(self, name: str, params: dict, callback):
         """Run the BAS task asynchronously.
 
         Args:
-            function_name (str): BAS function name as string.
-            function_params (dict): BAS function arguments list.
+            name (str): BAS function name as string.
+            params (dict): BAS function arguments list.
             callback: Function that will be executed after receiving the result.
         """
         await self._client.send_async('run_task', {
-            'params': json.dumps(function_params),
-            'function_name': function_name,
+            'params': json.dumps(params),
+            'function_name': name,
             'thread_id': self.id
         }, callback)
 

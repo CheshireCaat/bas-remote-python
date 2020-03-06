@@ -23,7 +23,7 @@ class BasThread(Runner):
         """Check if thread is already busy with running function."""
         return self._is_running
 
-    async def _run_function(self, function_name: str, function_params: dict, on_result, on_error):
+    async def _run_function(self, name: str, params: dict, on_result, on_error):
         async def callback(result: str):
             response = Response.from_json(result)
             self._is_running = False
@@ -39,7 +39,7 @@ class BasThread(Runner):
             self._id = randint(1, 1000000)
             await self._client.start_thread(self.id)
 
-        await self._run_task(function_name, function_params, callback)
+        await self._run_task(name, params, callback)
         self._is_running = True
 
     async def stop(self) -> None:
