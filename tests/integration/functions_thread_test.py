@@ -50,7 +50,7 @@ class ThreadTestCase(BaseTest):
     def assertThread(self, thread):
         self.loop.run_until_complete(thread.stop())
         self.assertFalse(thread.is_running)
-        self.assertTrue(thread.id == 0)
+        self.assertEqual(thread.id, 0)
 
 
 if __name__ == '__main__':

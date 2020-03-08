@@ -26,14 +26,14 @@ class BaseTest(unittest.TestCase):
         tasks = []
         for i in range(len(x)):
             if isinstance(runner, BasRemoteClient):
-                task = get_func(runner, x[i], y[i], 'Add')
+                task = get_func(runner, x[i], y[i])
             else:
-                task = get_func(runner[i], x[i], y[i], 'Add')
+                task = get_func(runner[i], x[i], y[i])
             tasks.append(task)
         return self.loop.run_until_complete(asyncio.gather(*tasks, loop=self.loop))
 
     def run_function(self, runner, x: int, y: int):
-        return self.loop.run_until_complete(get_func(runner, x, y, 'Add'))
+        return self.loop.run_until_complete(get_func(runner, x, y))
 
     def run_fail(self, runner, x: int, y: int):
         return self.loop.run_until_complete(get_func(runner, x, y, 'Add1'))
