@@ -121,6 +121,7 @@ class EngineService:
         return path.join(dir_path or self._exe_dir, '.lock')
 
     async def close(self) -> None:
+        """Close the engine service."""
         self._process.kill()
         self._lock.release()
 

@@ -80,6 +80,7 @@ class SocketService:
         return message.id_
 
     async def close(self) -> None:
+        """Close the socket service."""
         if not self.is_connected:
             return
         await self._socket.close()
