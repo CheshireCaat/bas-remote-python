@@ -1,125 +1,175 @@
 import asyncio
-
-from inspect import getfullargspec
+import json
+from asyncio import Future
 from random import randint
-from typing import Callable, Dict, Optional
+from typing import Callable, Optional, Dict, Any
 
-from .services import EngineService, SocketService
-from .errors import AuthenticationError
-from .callback import ClientCallback
+from pyee import AsyncIOEventEmitter
+
+from .errors import AuthenticationError, ClientNotStartedError
 from .options import Options
+from .runners import BasFunction, BasThread
+from .services import EngineService, SocketService
+from .types import Message
 
 
-__all__ = ['BasRemoteClient']
-
-
-class BasRemoteClient():
+class BasRemoteClient(AsyncIOEventEmitter):
     """Class that provides methods for remotely interacting with BAS."""
 
-    _def_requests: Dict[int, Callable] = {}
+    _requests: Dict[int, Callable] = {}
+    """Dictionary of requests handlers."""
 
-    _arg_requests: Dict[int, Callable] = {}
+    _engine: EngineService = None
+    """Client engine service object."""
 
-    def __init__(self, options: Options, callback: ClientCallback = None, loop: asyncio.BaseEventLoop = None):
+    _socket: SocketService = None
+    """Client socket service object"""
+
+    _is_started: bool = False
+
+    _future: Future = None
+
+    def __init__(self, options: Options, loop: Optional[asyncio.AbstractEventLoop] = None):
         """Create an instance of BasRemoteClient class.
 
         Args:
-            options (Options): 
-                Client options object.
-            callback (ClientCallback, optional):
-                Client callback object. Defaults to None.
-            loop (asyncio.BaseEventLoop, optional): 
-                AsyncIO loop object. Defaults to None.
+            options (Options): Remote control options object.
+            loop (AbstractEventLoop, optional): AsyncIO event loop object. Defaults to None.
         """
-        self._loop = loop or asyncio.get_event_loop()
-        self._callback = callback or ClientCallback()
-        self._options = options
+        self.loop = loop or asyncio.get_event_loop()
+        super().__init__(self.loop)
+        self.options = options
 
+        self._future = self.loop.create_future()
         self._engine = EngineService(self)
         self._socket = SocketService(self)
-        self._future = asyncio.Future()
 
-    async def _on_message_received(self, message: dict) -> None:
-        await self._callback.on_message_received(message)
+        self.on('message_received', self._on_message_received)
+        self.on('socket_open', self._on_socket_open)
 
-        msg_type, msg_id = message['type'], message['id']
-
-        if msg_type == 'initialize':
-            await self.send('accept_resources', {'-bas-empty-script-': True})
-        elif msg_type == 'thread_start' and not self._future.done():
-            self._future.set_result(True)
-        elif msg_type == 'message' and not self._future.done():
-            self._future.set_exception(AuthenticationError())
-        elif message['async'] and msg_id:
-            if msg_id in self._arg_requests:
-                self._arg_requests.pop(msg_id)(message['data'])
-            if msg_id in self._def_requests:
-                self._def_requests.pop(msg_id)()
-
-    async def _on_message_sent(self, message: dict) -> None:
-        await self._callback.on_message_sent(message)
-
-    async def _on_socket_closed(self) -> None:
-        await self._callback.on_socket_closed()
-
-    async def _on_socket_opened(self) -> None:
-        await self.send('remote_control_data', {
-            'script': self._options.scriptName,
-            'password': self._options.password,
-            'login': self._options.login,
-        })
-        await self._callback.on_socket_opened()
-
-    async def send_async(self, msg_type: str, params: dict = {}, on_result: Optional[Callable] = None) -> None:
-        msg_id = await self.send(msg_type, params, True)
-
-        if on_result and args_len(on_result) == 1:
-            self._arg_requests[msg_id] = on_result
-        if on_result and args_len(on_result) == 0:
-            self._def_requests[msg_id] = on_result
-
-    async def send(self, msg_type: str, params: dict = {}, is_async: bool = False) -> int:
-        """Send the custom message and get message id as result.
-
-        Args:
-            msg_type (str): [description]
-            params (dict, optional): [description]. Defaults to {}.
-            is_async (bool, optional): [description]. Defaults to False.
-
-        Returns:
-            int: message id number.
-        """
-        message = new_message(msg_type, params, is_async)
-        await self._socket.send(message)
-        return message['id']
+    @property
+    def is_started(self):
+        """Gets a value that indicates whether the current client is already running."""
+        return self._is_started
 
     async def start(self) -> None:
         """Start the client and wait for it initialize."""
         await self._engine.initialize()
-
         port = randint(10000, 20000)
 
         await self._engine.start(port)
         await self._socket.start(port)
-
-        future = self._future
-        loop = self._loop
-        timeout = 60
         await asyncio.wait_for(
-            future,
-            timeout,
-            loop=loop
+            fut=self._future,
+            loop=self.loop,
+            timeout=60
         )
 
+    async def _on_message_received(self, message: Message) -> None:
+        if message.type_ == 'initialize':
+            await self._send('accept_resources', {'-bas-empty-script-': True})
+        elif message.type_ == 'thread_start' and not self._future.done():
+            self._future.set_result(True)
+            self._is_started = True
+        elif message.type_ == 'message' and not self._future.done():
+            self._future.set_exception(AuthenticationError())
+            self._is_started = False
+        elif message.async_ and message.id_:
+            callback = self._requests.pop(message.id_)
+            if message.type_ == 'get_global_variable':
+                callback(json.loads(message.data))
+            else:
+                callback(message.data)
 
-def new_message(msg_type, params, is_async):
-    return {
-        'id': randint(100000, 999999),
-        'async': is_async,
-        'type': msg_type,
-        'data': params
-    }
+    async def _on_socket_open(self) -> None:
+        await self._send('remote_control_data', {
+            'script': self.options.script_name,
+            'password': self.options.password,
+            'login': self.options.login,
+        })
+
+    def run_function(self, function_name: str, function_params: Optional[Dict] = None) -> BasFunction:
+        """Call the BAS function asynchronously.
+
+        Args:
+            function_name (str): BAS function name as string.
+            function_params (dict, optional): BAS function arguments list. Defaults to None.
+        """
+        if not self.is_started:
+            raise ClientNotStartedError()
+        return BasFunction(self, function_name, function_params)
+
+    async def send(self, type_: str, data: Optional[Dict] = None, async_: bool = False) -> int:
+        """Send the custom message asynchronously and get message id as result.
+
+        Args:
+            type_ (str): Selected message type.
+            data (dict, optional): Message arguments. Defaults to None.
+            async_ (bool): Is message async. Defaults to False.
+
+        Returns:
+            int: Message id number.
+        """
+        if not self.is_started:
+            raise ClientNotStartedError()
+        return await self._send(type_, data, async_)
+
+    async def send_async(self, type_: str, data: Optional[Dict] = None) -> Any:
+        """Send the custom message asynchronously and get result.
+
+        Args:
+            type_ (str): Selected message type.
+            data (dict, optional): Message arguments. Defaults to None.
+        """
+        if not self.is_started:
+            raise ClientNotStartedError()
+        return await self._send_async(type_, data)
+
+    async def _send(self, type_: str, data: Optional[Dict] = None, async_=False) -> int:
+        return await self._socket.send(
+            message=Message(
+                data={} if not data else data,
+                id_=randint(100000, 999999),
+                async_=async_,
+                type_=type_,
+            )
+        )
+
+    async def _send_async(self, type_: str, data: Optional[Dict] = None) -> Any:
+        future = self.loop.create_future()
+        id_ = await self.send(type_, data, True)
+        self._requests[id_] = lambda result: future.set_result(result)
+        return await future
+
+    async def start_thread(self, thread_id: int) -> None:
+        """Start thread with specified id.
+
+        Args:
+            thread_id (int): Thread identifier.
+        """
+        await self.send('start_thread', {'thread_id': thread_id})
+
+    async def stop_thread(self, thread_id: int) -> None:
+        """Stop thread with specified id.
+
+        Args:
+            thread_id (int): Thread identifier.
+        """
+        await self.send('stop_thread', {'thread_id': thread_id})
+
+    def create_thread(self) -> BasThread:
+        """Create new BAS thread object.
+
+        Returns:
+            BasThread: Thread object.
+        """
+        return BasThread(self)
+
+    async def close(self) -> None:
+        """Close the client."""
+        await self._engine.close()
+        await self._socket.close()
+        self._is_started = False
 
 
-def args_len(func):
-    return len(getfullargspec(func).args)
+__all__ = ['BasRemoteClient']
