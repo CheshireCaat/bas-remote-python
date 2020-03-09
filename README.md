@@ -1,6 +1,7 @@
 # bas-remote-python
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/bas-remote-python.svg)](https://badge.fury.io/py/bas-remote-python)
 
 **bas-remote-python** - Python library, which allows you to **automate Google Chrome browser**. 
 
