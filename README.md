@@ -39,25 +39,25 @@ from bas_remote import Options
 
 
 async def main():
-    # Set script name, and optionally auth details (login, password)
+    # Set script name, and optionally auth details (login, password).
     options = Options(script_name='TestRemoteControl')
 
-    # Create client
+    # Create client.
     script_client = BasRemoteClient(options)
 
-    # Start application, this may take some time
+    # Start application, this may take some time.
     await script_client.start()
 
-    # Set parameters for function
+    # Set parameters for function.
     script_params = {'Query': 'cats'}
 
-    # Run function and wait for result
-    # Following function will return list of strings
+    # Run function and wait for result.
+    # Following function will return list of strings.
     result = await script_client.run_function(
         'GoogleSearch',  # or 'YourFunctionName'
         script_params)
 
-    # Iterate and output results
+    # Iterate and output results.
     for link in result:
         print(link)
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     event_loop.run_until_complete(main())
 ```
 
-Checkout [wiki](https://github.com/CheshireCaat/bas-remote-node/wiki) for more examples.
+Checkout [wiki](https://github.com/CheshireCaat/bas-remote-python/wiki) for more examples.
 
 # Running custom code
 
