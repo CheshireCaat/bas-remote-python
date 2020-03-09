@@ -37,4 +37,4 @@ class BaseTest(unittest.TestCase):
 
 
 def get_func(runner, x: int, y: int, name: str = 'Add'):
-    return runner.run_function(name, {'X': x, 'Y': y}).result()
+    return runner.run_function(name, {'X': x, 'Y': y})
