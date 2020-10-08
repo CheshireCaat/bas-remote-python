@@ -19,9 +19,11 @@ setup(
         "Documentation": "https://github.com/CheshireCaat/bas-remote-python/wiki",
     },
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        'Intended Audience :: Developers',
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "License :: OSI Approved :: MIT License",
     ],
     version=bas_remote.__version__,
     license=bas_remote.__license__,
