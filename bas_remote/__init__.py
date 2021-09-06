@@ -19,4 +19,4 @@ __all__ = [
 
 __author__ = 'CheshireCaat'
 __license__ = 'MIT'
-__version__ = '1.0'
+__version__ = '1.1'
