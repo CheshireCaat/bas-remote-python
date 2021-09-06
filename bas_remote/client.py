@@ -61,7 +61,6 @@ class BasRemoteClient(AsyncIOEventEmitter):
         await self._socket.start(port)
         await asyncio.wait_for(
             fut=self._future,
-            loop=self.loop,
             timeout=60
         )
 
