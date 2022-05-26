@@ -33,7 +33,7 @@ class SocketService:
         attempt = 1
         while not self.is_connected:
             try:
-                self._socket = await connect(f'ws://127.0.0.1:{port}')
+                self._socket = await connect(f'ws://127.0.0.1:{port}', open_timeout=None)
             except ConnectionRefusedError:
                 if attempt == 60:
                     raise SocketNotConnectedError()
