@@ -4,7 +4,7 @@ from asyncio import Future
 from random import randint
 from typing import Callable, Optional, Dict, Any
 
-from pyee import AsyncIOEventEmitter
+from pyee.asyncio import AsyncIOEventEmitter
 
 from .errors import AuthenticationError, ClientNotStartedError
 from .options import Options
