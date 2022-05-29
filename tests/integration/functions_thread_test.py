@@ -1,8 +1,8 @@
 import unittest
 
 from bas_remote.errors import FunctionError
-from .base import BaseTest
-from .helpers import *
+from base import BaseTest
+from helpers import *
 
 
 class ThreadTestCase(BaseTest):
