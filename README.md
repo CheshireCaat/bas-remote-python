@@ -126,7 +126,7 @@ Project source code can be downloaded [here](./examples/TestRemoteControlBasPyth
 # Project dependencies for developers
 
 - poetry, [installation instructions](https://python-poetry.org/docs/)
-- python(tested with 3.9, 3.10 versions)
+- python(tested with 3.7-3.10 versions)
 - make(optional)
 
 # How to contribute
@@ -137,6 +137,16 @@ Project source code can be downloaded [here](./examples/TestRemoteControlBasPyth
 - make your changes
 - run `make tests` and make sure everything work as expected
 - finally, open pull request
+
+# Notes:
+
+- you can export requirements from poetry to classic `requirements.txt`
+  ( **not recommended, only for backward compatibility**):
+
+```bash
+make create_requirements
+pip install -r requirements.txt
+```
 
 # License
 

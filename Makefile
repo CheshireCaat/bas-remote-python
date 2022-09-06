@@ -1,4 +1,4 @@
-.PHONY: tests
+.PHONY: tests tests_integration tests_types create_requirements build
 .DEFAULT_GOAL := tests
 
 tests:
@@ -12,3 +12,12 @@ tests_integration:
 tests_types:
 	poetry run python -m unittest tests.types.message_test
 	poetry run python -m unittest tests.types.response_test
+
+build:
+	python setup.py build
+
+clean:
+	rm -rf ./build || echo ""
+
+create_requirements:
+	poetry export --without-hashes --without-urls -f requirements.txt --output requirements.txt
