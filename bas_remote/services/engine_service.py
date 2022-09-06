@@ -12,7 +12,7 @@ from filelock import FileLock, Timeout
 from bas_remote.errors import ScriptNotExistError, ScriptNotSupportedError
 from bas_remote.types import Script
 
-ENDPOINT = 'https://bablosoft.com'
+END_POINT = 'https://bablosoft.com'
 
 
 class EngineService:
@@ -62,7 +62,7 @@ class EngineService:
         self._clear_run_directory()
 
     async def initialize(self):
-        url = f'{ENDPOINT}/scripts/{self._script_name}/properties'
+        url = f'{END_POINT}/scripts/{self._script_name}/properties'
 
         async with ClientSession(loop=self._loop) as session:
             async with session.get(url) as response:
@@ -78,7 +78,7 @@ class EngineService:
         self._exe_dir = path.join(self._script_dir, script.hash[0:5])
 
     async def _download_executable(self, zip_path: str, zip_name: str, url_name: str) -> None:
-        url = f"{ENDPOINT}/distr/{url_name}/{path.basename(self._zip_dir)}/{zip_name}.zip"
+        url = f"{END_POINT}/distr/{url_name}/{path.basename(self._zip_dir)}/{zip_name}.zip"
 
         async with ClientSession(loop=self._loop) as session:
             async with session.get(url) as response:

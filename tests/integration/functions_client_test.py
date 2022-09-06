@@ -1,10 +1,12 @@
 import unittest
 
 from bas_remote.errors import FunctionError
-from base import BaseTest
-from helpers import *
+from tests import windows_test
+from tests.integration.base import BaseTest
+from tests.integration.helpers import *
 
 
+@windows_test
 class ClientTestCase(BaseTest):
 
     def test_parallel_function_run(self):
@@ -23,14 +25,14 @@ class ClientTestCase(BaseTest):
                 self.assertEqual(result, x[i] + y[i])
 
     def test_not_existing_function_run(self):
-        x, y = generate_pair()
+        x, y = generate_one_pair()
 
         with self.subTest(x=x, y=y):
             with self.assertRaises(FunctionError):
                 self.run_fail(self.client, x, y)
 
     def test_function_run(self):
-        x, y = generate_pair()
+        x, y = generate_one_pair()
 
         result = self.run_function(self.client, x, y)
         self.assertEqual(result, x + y)
