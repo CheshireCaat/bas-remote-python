@@ -79,8 +79,8 @@ Checkout [wiki](https://github.com/CheshireCaat/bas-remote-python/wiki) for more
 Previous example used _TestRemoteControl_ project and _GoogleSearch_ function defined in it. In most cases you want to
 use your own projects and functions. In order to do it:
 
-- Install BAS. Download using following [link](https://bablosoft.com/shop/BrowserAutomationStudio#download). **
-  IMPORTANT** You need to be a premium user in order to create project with custom functions.
+- Install BAS. Download using following [link](https://bablosoft.com/shop/BrowserAutomationStudio#download).
+  **IMPORTANT**: You need to be a premium user in order to create project with custom functions.
 - Start [record mode](https://i.imgur.com/JrV7ua5.png) and create new function by
   using [function manager](https://i.imgur.com/yAjLu8v.png). BAS functions works like functions in any other languages.
   They can be called with parameters and can return value as a result. Functions help to incapsulate and reuse your
