@@ -8,6 +8,12 @@
 
 In order to make it possible, BrowserAutomationStudio application is used. **bas-remote-python** allows you to call and control execution of functions created in BAS. Consider following example, you have a BAS function, which executes specified Google search query and returns result as a list of urls. Using this library, you can call that function in any Python application and obtain result. You can distribute applications written with **bas-remote-python** library as well.
 
+# Project dependencies
+
+- poetry, [installation instructions](https://python-poetry.org/docs/)
+- tested with python 3.8, 3.9, 3.10
+- make(optional)
+
 # BrowserAutomationStudio
 
 **BAS** - is application that allows you to automate any activities in Google Chrome browser with a help of visual programming and without knowing of any programming language. You can think of it as IDE created especially for browser automation:
@@ -20,7 +26,7 @@ Check following link for more info:
 
 # Installation
 
-```
+```bash
 pip install bas-remote-python
 ```
 
