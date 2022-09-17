@@ -1,10 +1,12 @@
 import unittest
+import platform
 
 from bas_remote.errors import FunctionError
 from base import BaseTest
 from helpers import *
 
 
+unittest.skipIf(platform.system() != 'Windows', 'Windows-only test.')
 class ClientTestCase(BaseTest):
 
     def test_parallel_function_run(self):
