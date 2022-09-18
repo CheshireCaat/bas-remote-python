@@ -20,9 +20,9 @@ class Options:
 
     def __post_init__(self):
         if not self.working_dir:
-            raise ValueError("Field 'workingDir' must be specified")
+            raise ValueError("Field 'working_dir' must be specified")
         if not self.script_name:
-            raise ValueError("Field 'scriptName' must be specified")
+            raise ValueError("Field 'script_name' must be specified")
         self.working_dir = path.abspath(self.working_dir)
 
 
