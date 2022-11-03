@@ -52,8 +52,12 @@ class BasRemoteClient(AsyncIOEventEmitter):
         """Gets a value that indicates whether the current client is already running."""
         return self._is_started
 
-    async def start(self) -> None:
-        """Start the client and wait for it initialize."""
+    async def start(self, timeout: Optional[float] = 60) -> None:
+        """Start the client and wait for it initialize.
+
+        Args:
+            timeout (float, optional): Client initialization timeout (in seconds).
+        """
         await self._engine.initialize()
         port = randint(10000, 20000)
 
@@ -61,7 +65,7 @@ class BasRemoteClient(AsyncIOEventEmitter):
         await self._socket.start(port)
         await asyncio.wait_for(
             fut=self._future,
-            timeout=60
+            timeout=timeout
         )
 
     async def _on_message_received(self, message: Message) -> None:
