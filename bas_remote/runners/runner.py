@@ -52,11 +52,11 @@ class BasRunner:
             'thread_id': self.id
         })
         response = Response.from_json(result)
-        if not response.success:
+        if response.success:
+            self._future.set_result(response.result)
+        else:
             exception = FunctionError(response.message)
             self._future.set_exception(exception)
-        else:
-            self._future.set_result(response.result)
 
     @property
     def id(self) -> int:

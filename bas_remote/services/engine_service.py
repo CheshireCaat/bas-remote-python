@@ -78,7 +78,7 @@ class EngineService:
         self._exe_dir = path.join(self._script_dir, script.hash[0:5])
 
     async def _download_executable(self, zip_path: str, zip_name: str, url_name: str) -> None:
-        url = f"{ENDPOINT}/distr/{url_name}/{path.basename(self._zip_dir)}/{zip_name}.zip"
+        url = f"http://downloads.bablosoft.com/distr/{url_name}/{path.basename(self._zip_dir)}/{zip_name}.zip"
 
         async with ClientSession(loop=self._loop) as session:
             async with session.get(url) as response:
