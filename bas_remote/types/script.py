@@ -1,4 +1,4 @@
-from distutils.version import StrictVersion
+from packaging.version import Version
 
 
 class Script:
@@ -16,8 +16,8 @@ class Script:
         if not self.engine_version:
             return False
 
-        supported = StrictVersion(self.supported_version)
-        engine = StrictVersion(self.engine_version)
+        supported = Version(self.supported_version)
+        engine = Version(self.engine_version)
         return engine >= supported
 
     @property

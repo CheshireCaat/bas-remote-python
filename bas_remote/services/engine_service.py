@@ -95,7 +95,8 @@ class EngineService:
             async def task(name, zip_file: ZipFile):
                 zip_file.extract(name, self._exe_dir, None)
 
-            await asyncio.wait([task(name, file) for name in file.namelist()])
+            tasks = [task(name, file) for name in file.namelist()]
+            await asyncio.gather(*tasks, return_exceptions=True)
 
     def _start_engine_process(self, port: int) -> None:
         self._process = subprocess.Popen([
