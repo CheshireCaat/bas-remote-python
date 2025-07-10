@@ -11,12 +11,12 @@ with open('requirements.txt') as f:
 setup(
     name='bas-remote-python',
     description='Python library, which allows you to automate Google Chrome browser.',
-    url='https://github.com/CheshireCaat/bas-remote-python',
+    url='https://github.com/bablosoft/bas-remote-python',
     long_description_content_type='text/markdown',
     long_description=long_description,
-    author_email='cheshirecat902@gmail.com',
+    author_email='mail.to.twaego@gmail.com',
     project_urls={
-        "Documentation": "https://github.com/CheshireCaat/bas-remote-python/wiki",
+        "Documentation": "https://github.com/bablosoft/bas-remote-python/wiki",
     },
     classifiers=[
         'Intended Audience :: Developers',

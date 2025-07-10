@@ -17,6 +17,6 @@ __all__ = [
     'Message'
 ]
 
-__author__ = 'CheshireCaat'
-__version__ = '1.6'
+__author__ = 'bablosoft'
+__version__ = '1.7'
 __license__ = 'MIT'
